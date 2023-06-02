@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Game of Life</title>
+    <style>
+      #board .cell, .color-pick > label {
+          width: 32px;
+          height: 32px;
+          border-width: 2px;
+          border-style: solid;
+          transition: background 0.5s, border-radius 0.5s, border-color 0.5s;
+      }
+      #board .cell.off {
+          border-color: lightblue;
+      }
+
+      table {
+          border-spacing: 0;
+      }
+
+      td { margin: 0; padding: 0 }
+
+      .on[data-color="blu"]    { background: lightblue }
+      .on[data-color="blu"][data-adj="0"]  { border-radius: 18px 18px 18px 18px; border-color: #26667c #26667c #26667c #26667c }
+      .on[data-color="blu"][data-adj="1"]  { border-radius:  6px  6px 18px 18px; border-color: lightblue #26667c #26667c #26667c }
+      .on[data-color="blu"][data-adj="2"]  { border-radius:  6px 18px 18px  6px; border-color: #26667c #26667c #26667c lightblue }
+      .on[data-color="blu"][data-adj="3"]  { border-radius:  0px  6px 18px  6px; border-color: lightblue #26667c #26667c lightblue }
+      .on[data-color="blu"][data-adj="4"]  { border-radius: 18px 18px  6px  6px; border-color: #26667c #26667c lightblue #26667c }
+      .on[data-color="blu"][data-adj="5"]  { border-radius:  6px  6px  6px  6px; border-color: lightblue #26667c lightblue #26667c }
+      .on[data-color="blu"][data-adj="6"]  { border-radius:  6px 18px  6px  0px; border-color: #26667c #26667c lightblue lightblue }
+      .on[data-color="blu"][data-adj="7"]  { border-radius:  6px  6px  6px  6px; border-color: lightblue #26667c lightblue lightblue }
+      .on[data-color="blu"][data-adj="8"]  { border-radius: 18px  6px  6px 18px; border-color: #26667c lightblue #26667c #26667c }
+      .on[data-color="blu"][data-adj="9"]  { border-radius:  6px  0px  6px 18px; border-color: lightblue lightblue #26667c #26667c }
+      .on[data-color="blu"][data-adj="10"] { border-radius:  6px  6px  6px  6px; border-color: #26667c lightblue #26667c lightblue }
+      .on[data-color="blu"][data-adj="11"] { border-radius:  6px  6px  6px  6px; border-color: lightblue lightblue #26667c lightblue }
+      .on[data-color="blu"][data-adj="12"] { border-radius: 18px  6px  0px  6px; border-color: #26667c lightblue lightblue #26667c }
+      .on[data-color="blu"][data-adj="13"] { border-radius:  6px  6px  6px  6px; border-color: lightblue lightblue lightblue #26667c }
+      .on[data-color="blu"][data-adj="14"] { border-radius:  6px  6px  6px  6px; border-color: #26667c lightblue lightblue lightblue }
+      .on[data-color="blu"][data-adj="15"] { border-radius:  0px  0px  0px  0px; border-color: lightblue }
+
+      .on[data-color="red"]    { background: #f08080 }
+      .on[data-color="red"][data-adj="0"]  { border-radius: 18px 18px 18px 18px; border-color: #cd5c5c #cd5c5c #cd5c5c #cd5c5c }
+      .on[data-color="red"][data-adj="1"]  { border-radius:  6px  6px 18px 18px; border-color: #f08080 #cd5c5c #cd5c5c #cd5c5c }
+      .on[data-color="red"][data-adj="2"]  { border-radius:  6px 18px 18px  6px; border-color: #cd5c5c #cd5c5c #cd5c5c #f08080 }
+      .on[data-color="red"][data-adj="3"]  { border-radius:  0px  6px 18px  6px; border-color: #f08080 #cd5c5c #cd5c5c #f08080 }
+      .on[data-color="red"][data-adj="4"]  { border-radius: 18px 18px  6px  6px; border-color: #cd5c5c #cd5c5c #f08080 #cd5c5c }
+      .on[data-color="red"][data-adj="5"]  { border-radius:  6px  6px  6px  6px; border-color: #f08080 #cd5c5c #f08080 #cd5c5c }
+      .on[data-color="red"][data-adj="6"]  { border-radius:  6px 18px  6px  0px; border-color: #cd5c5c #cd5c5c #f08080 #f08080 }
+      .on[data-color="red"][data-adj="7"]  { border-radius:  6px  6px  6px  6px; border-color: #f08080 #cd5c5c #f08080 #f08080 }
+      .on[data-color="red"][data-adj="8"]  { border-radius: 18px  6px  6px 18px; border-color: #cd5c5c #f08080 #cd5c5c #cd5c5c }
+      .on[data-color="red"][data-adj="9"]  { border-radius:  6px  0px  6px 18px; border-color: #f08080 #f08080 #cd5c5c #cd5c5c }
+      .on[data-color="red"][data-adj="10"] { border-radius:  6px  6px  6px  6px; border-color: #cd5c5c #f08080 #cd5c5c #f08080 }
+      .on[data-color="red"][data-adj="11"] { border-radius:  6px  6px  6px  6px; border-color: #f08080 #f08080 #cd5c5c #f08080 }
+      .on[data-color="red"][data-adj="12"] { border-radius: 18px  6px  0px  6px; border-color: #cd5c5c #f08080 #f08080 #cd5c5c }
+      .on[data-color="red"][data-adj="13"] { border-radius:  6px  6px  6px  6px; border-color: #f08080 #f08080 #f08080 #cd5c5c }
+      .on[data-color="red"][data-adj="14"] { border-radius:  6px  6px  6px  6px; border-color: #cd5c5c #f08080 #f08080 #f08080 }
+      .on[data-color="red"][data-adj="15"] { border-radius:  0px  0px  0px  0px; border-color: #f08080 }
+
+      .on[data-color="yel"]    { background: #f1c40f }
+      .on[data-color="yel"][data-adj="0"]  { border-radius: 18px 18px 18px 18px; border-color: #f7dc6f #f7dc6f #f7dc6f #f7dc6f }
+      .on[data-color="yel"][data-adj="1"]  { border-radius:  6px  6px 18px 18px; border-color: #f1c40f #f7dc6f #f7dc6f #f7dc6f }
+      .on[data-color="yel"][data-adj="2"]  { border-radius:  6px 18px 18px  6px; border-color: #f7dc6f #f7dc6f #f7dc6f #f1c40f }
+      .on[data-color="yel"][data-adj="3"]  { border-radius:  0px  6px 18px  6px; border-color: #f1c40f #f7dc6f #f7dc6f #f1c40f }
+      .on[data-color="yel"][data-adj="4"]  { border-radius: 18px 18px  6px  6px; border-color: #f7dc6f #f7dc6f #f1c40f #f7dc6f }
+      .on[data-color="yel"][data-adj="5"]  { border-radius:  6px  6px  6px  6px; border-color: #f1c40f #f7dc6f #f1c40f #f7dc6f }
+      .on[data-color="yel"][data-adj="6"]  { border-radius:  6px 18px  6px  0px; border-color: #f7dc6f #f7dc6f #f1c40f #f1c40f }
+      .on[data-color="yel"][data-adj="7"]  { border-radius:  6px  6px  6px  6px; border-color: #f1c40f #f7dc6f #f1c40f #f1c40f }
+      .on[data-color="yel"][data-adj="8"]  { border-radius: 18px  6px  6px 18px; border-color: #f7dc6f #f1c40f #f7dc6f #f7dc6f }
+      .on[data-color="yel"][data-adj="9"]  { border-radius:  6px  0px  6px 18px; border-color: #f1c40f #f1c40f #f7dc6f #f7dc6f }
+      .on[data-color="yel"][data-adj="10"] { border-radius:  6px  6px  6px  6px; border-color: #f7dc6f #f1c40f #f7dc6f #f1c40f }
+      .on[data-color="yel"][data-adj="11"] { border-radius:  6px  6px  6px  6px; border-color: #f1c40f #f1c40f #f7dc6f #f1c40f }
+      .on[data-color="yel"][data-adj="12"] { border-radius: 18px  6px  0px  6px; border-color: #f7dc6f #f1c40f #f1c40f #f7dc6f }
+      .on[data-color="yel"][data-adj="13"] { border-radius:  6px  6px  6px  6px; border-color: #f1c40f #f1c40f #f1c40f #f7dc6f }
+      .on[data-color="yel"][data-adj="14"] { border-radius:  6px  6px  6px  6px; border-color: #f7dc6f #f1c40f #f1c40f #f1c40f }
+      .on[data-color="yel"][data-adj="15"] { border-radius:  0px  0px  0px  0px; border-color: #f1c40f }
+
+      .on[data-color="grn"]    { background: #239b5f }
+      .on[data-color="grn"][data-adj="0"]  { border-radius: 18px 18px 18px 18px; border-color: #23cc71 #23cc71 #23cc71 #23cc71 }
+      .on[data-color="grn"][data-adj="1"]  { border-radius:  6px  6px 18px 18px; border-color: #239b5f #23cc71 #23cc71 #23cc71 }
+      .on[data-color="grn"][data-adj="2"]  { border-radius:  6px 18px 18px  6px; border-color: #23cc71 #23cc71 #23cc71 #239b5f }
+      .on[data-color="grn"][data-adj="3"]  { border-radius:  0px  6px 18px  6px; border-color: #239b5f #23cc71 #23cc71 #239b5f }
+      .on[data-color="grn"][data-adj="4"]  { border-radius: 18px 18px  6px  6px; border-color: #23cc71 #23cc71 #239b5f #23cc71 }
+      .on[data-color="grn"][data-adj="5"]  { border-radius:  6px  6px  6px  6px; border-color: #239b5f #23cc71 #239b5f #23cc71 }
+      .on[data-color="grn"][data-adj="6"]  { border-radius:  6px 18px  6px  0px; border-color: #23cc71 #23cc71 #239b5f #239b5f }
+      .on[data-color="grn"][data-adj="7"]  { border-radius:  6px  6px  6px  6px; border-color: #239b5f #23cc71 #239b5f #239b5f }
+      .on[data-color="grn"][data-adj="8"]  { border-radius: 18px  6px  6px 18px; border-color: #23cc71 #239b5f #23cc71 #23cc71 }
+      .on[data-color="grn"][data-adj="9"]  { border-radius:  6px  0px  6px 18px; border-color: #239b5f #239b5f #23cc71 #23cc71 }
+      .on[data-color="grn"][data-adj="10"] { border-radius:  6px  6px  6px  6px; border-color: #23cc71 #239b5f #23cc71 #239b5f }
+      .on[data-color="grn"][data-adj="11"] { border-radius:  6px  6px  6px  6px; border-color: #239b5f #239b5f #23cc71 #239b5f }
+      .on[data-color="grn"][data-adj="12"] { border-radius: 18px  6px  0px  6px; border-color: #23cc71 #239b5f #239b5f #23cc71 }
+      .on[data-color="grn"][data-adj="13"] { border-radius:  6px  6px  6px  6px; border-color: #239b5f #239b5f #239b5f #23cc71 }
+      .on[data-color="grn"][data-adj="14"] { border-radius:  6px  6px  6px  6px; border-color: #23cc71 #239b5f #239b5f #239b5f }
+      .on[data-color="grn"][data-adj="15"] { border-radius:  0px  0px  0px  0px; border-color: #239b5f }
+
+      .on[data-color="pur"]    { background: #8044ad }
+      .on[data-color="pur"][data-adj="0"]  { border-radius: 18px 18px 18px 18px; border-color: #bb8fce #bb8fce #bb8fce #bb8fce }
+      .on[data-color="pur"][data-adj="1"]  { border-radius:  6px  6px 18px 18px; border-color: #8e44ad #bb8fce #bb8fce #bb8fce }
+      .on[data-color="pur"][data-adj="2"]  { border-radius:  6px 18px 18px  6px; border-color: #bb8fce #bb8fce #bb8fce #8e44ad }
+      .on[data-color="pur"][data-adj="3"]  { border-radius:  0px  6px 18px  6px; border-color: #8e44ad #bb8fce #bb8fce #8e44ad }
+      .on[data-color="pur"][data-adj="4"]  { border-radius: 18px 18px  6px  6px; border-color: #bb8fce #bb8fce #8e44ad #bb8fce }
+      .on[data-color="pur"][data-adj="5"]  { border-radius:  6px  6px  6px  6px; border-color: #8e44ad #bb8fce #8e44ad #bb8fce }
+      .on[data-color="pur"][data-adj="6"]  { border-radius:  6px 18px  6px  0px; border-color: #bb8fce #bb8fce #8e44ad #8e44ad }
+      .on[data-color="pur"][data-adj="7"]  { border-radius:  6px  6px  6px  6px; border-color: #8e44ad #bb8fce #8e44ad #8e44ad }
+      .on[data-color="pur"][data-adj="8"]  { border-radius: 18px  6px  6px 18px; border-color: #bb8fce #8e44ad #bb8fce #bb8fce }
+      .on[data-color="pur"][data-adj="9"]  { border-radius:  6px  0px  6px 18px; border-color: #8e44ad #8e44ad #bb8fce #bb8fce }
+      .on[data-color="pur"][data-adj="10"] { border-radius:  6px  6px  6px  6px; border-color: #bb8fce #8e44ad #bb8fce #8e44ad }
+      .on[data-color="pur"][data-adj="11"] { border-radius:  6px  6px  6px  6px; border-color: #8e44ad #8e44ad #bb8fce #8e44ad }
+      .on[data-color="pur"][data-adj="12"] { border-radius: 18px  6px  0px  6px; border-color: #bb8fce #8e44ad #8e44ad #bb8fce }
+      .on[data-color="pur"][data-adj="13"] { border-radius:  6px  6px  6px  6px; border-color: #8e44ad #8e44ad #8e44ad #bb8fce }
+      .on[data-color="pur"][data-adj="14"] { border-radius:  6px  6px  6px  6px; border-color: #bb8fce #8e44ad #8e44ad #8e44ad }
+      .on[data-color="pur"][data-adj="15"] { border-radius:  0px  0px  0px  0px; border-color: #8e44ad }
+
+      .on[data-color="orn"]    { background: #e67e22 }
+      .on[data-color="orn"][data-adj="0"]  { border-radius: 18px 18px 18px 18px; border-color: #f0b27a #f0b27a #f0b27a #f0b27a }
+      .on[data-color="orn"][data-adj="1"]  { border-radius:  6px  6px 18px 18px; border-color: #e67e22 #f0b27a #f0b27a #f0b27a }
+      .on[data-color="orn"][data-adj="2"]  { border-radius:  6px 18px 18px  6px; border-color: #f0b27a #f0b27a #f0b27a #e67e22 }
+      .on[data-color="orn"][data-adj="3"]  { border-radius:  0px  6px 18px  6px; border-color: #e67e22 #f0b27a #f0b27a #e67e22 }
+      .on[data-color="orn"][data-adj="4"]  { border-radius: 18px 18px  6px  6px; border-color: #f0b27a #f0b27a #e67e22 #f0b27a }
+      .on[data-color="orn"][data-adj="5"]  { border-radius:  6px  6px  6px  6px; border-color: #e67e22 #f0b27a #e67e22 #f0b27a }
+      .on[data-color="orn"][data-adj="6"]  { border-radius:  6px 18px  6px  0px; border-color: #f0b27a #f0b27a #e67e22 #e67e22 }
+      .on[data-color="orn"][data-adj="7"]  { border-radius:  6px  6px  6px  6px; border-color: #e67e22 #f0b27a #e67e22 #e67e22 }
+      .on[data-color="orn"][data-adj="8"]  { border-radius: 18px  6px  6px 18px; border-color: #f0b27a #e67e22 #f0b27a #f0b27a }
+      .on[data-color="orn"][data-adj="9"]  { border-radius:  6px  0px  6px 18px; border-color: #e67e22 #e67e22 #f0b27a #f0b27a }
+      .on[data-color="orn"][data-adj="10"] { border-radius:  6px  6px  6px  6px; border-color: #f0b27a #e67e22 #f0b27a #e67e22 }
+      .on[data-color="orn"][data-adj="11"] { border-radius:  6px  6px  6px  6px; border-color: #e67e22 #e67e22 #f0b27a #e67e22 }
+      .on[data-color="orn"][data-adj="12"] { border-radius: 18px  6px  0px  6px; border-color: #f0b27a #e67e22 #e67e22 #f0b27a }
+      .on[data-color="orn"][data-adj="13"] { border-radius:  6px  6px  6px  6px; border-color: #e67e22 #e67e22 #e67e22 #f0b27a }
+      .on[data-color="orn"][data-adj="14"] { border-radius:  6px  6px  6px  6px; border-color: #f0b27a #e67e22 #e67e22 #e67e22 }
+      .on[data-color="orn"][data-adj="15"] { border-radius:  0px  0px  0px  0px; border-color: #e67e22 }
+
+      h1 { display: flex; align-items: center }
+
+      #play > span:after { content: "\23f8\fe0f"; font-size: 18pt }
+      #play.on > span:after { content: "\25b6\fe0f" }
+
+      #colors-form { display: flex; align-items: center }
+      .color-pick > label { display: inline-block }
+      .color-pick { display: inline-block }
+    </style>
+  </head>
+  <body>
+    <h1>Ronan and Mike's Game of Life &nbsp; <button id="play"><span></span></button></h1>
+
+    <form id="colors-form">
+      <div class="color-pick"><input id="red-picker" type="radio" name="color" value="red"> <label for="red-picker" data-color="red" data-adj="15" class="on"></div>
+      <div class="color-pick"><input id="orn-picker" type="radio" name="color" value="orn"> <label for="orn-picker" data-color="orn" data-adj="15" class="on"></div>
+      <div class="color-pick"><input id="yel-picker" type="radio" name="color" value="yel"> <label for="yel-picker" data-color="yel" data-adj="15" class="on"></div>
+      <div class="color-pick"><input id="grn-picker" type="radio" name="color" value="grn"> <label for="grn-picker" data-color="grn" data-adj="15" class="on"></div>
+      <div class="color-pick"><input id="blu-picker" type="radio" name="color" value="blu" checked> <label for="blu-picker" data-color="blu" data-adj="15" class="on"></div>
+      <div class="color-pick"><input id="pur-picker" type="radio" name="color" value="pur"> <label for="pur-picker" data-color="pur" data-adj="15" class="on"></div>
+    </form>
+
+    <div id="board"></div>
+
+    <script src="gol.js"></script>
+  </body>
+</html>

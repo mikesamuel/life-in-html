@@ -12,7 +12,7 @@ There's a color picker at top, a pause/resume
 button that controls the simulation,
 and just click in the grid to toggle a cell.
 
-![video](./life.mov)
+![video](https://github.com/mikesamuel/life-in-html/assets/368886/82da09d6-2751-4071-ae98-1688b3de020f)
 
 
 [Conway's Game of Life]: https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life

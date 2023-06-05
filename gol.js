@@ -4,7 +4,7 @@
     let playButton = $('#play');
     let colorsForm = $('#colors-form');
 
-    let n = 10;
+    let n = 24;
     let cells = [];
 
     let cellsTable = document.createElement('table');
